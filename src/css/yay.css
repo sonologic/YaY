@@ -1,0 +1,61 @@
+.win {
+    width: 30em;
+    height: 25em;
+    border: solid 1px black;
+    position: absolute;
+    top: 2em;
+    left: 2em;
+    background: white;
+    z-index: 100000;
+    display: none;
+}
+
+.subblock {
+    border: solid 1px gray;
+    padding: 0.5em;
+    background: #bbb;
+    display: none;
+}
+
+.applet {
+    display: none;
+}
+
+#mainmenu {
+    width: 100%;
+    border: 1px solid gray;
+    height: 2em;
+    padding-top: 1em;
+}
+
+#mainmenu span {
+    cursor: pointer;
+}
+
+#mainmenu span.active {
+    border: 1px solid black;
+}
+
+#mainmenu span.inactive {
+    border: 1px solid gray;
+    color: gray;
+}
+
+#mainmenu span:hover {
+    border: 1px solid red;
+}
+
+#edit {
+    position: absolute;
+    top: 4em;
+    left: 13em;
+    width: 80%;
+    background: #bbb;
+    border: solid black 1px;
+    z-index: 10000;
+}
+
+#edit div.label {
+    float: left;
+    clear: left;
+}

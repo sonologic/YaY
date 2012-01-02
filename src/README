@@ -1,0 +1,10 @@
+YaY - Yet another YARM
+======================
+
+
+
+Dependencies
+============
+php5 (+mongo +id3 +vorbis)
+mongodb
+sox

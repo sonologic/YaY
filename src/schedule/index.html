@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>schedule</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel='stylesheet' type='text/css' href='../css/yay.css'>
+        <link rel='stylesheet' type='text/css' href='../css/fullcalendar.css'>
+        <script type='text/javascript' src='../js/jquery.js'></script>
+        <script type='text/javascript' src='../js/fullcalendar.js'></script>
+        <script type="text/javascript" src="../js/yay.js"></script>
+    </head>
+    <body>
+        <div>
+            <h1>Schedule</h1>
+            <div id="calendar"></div>
+        </div>
+        <div id="event" class="win">
+            <form enctype="multipart/form-data" action="upload.php" method="POST">
+                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+                <h3 id="yaydate"></h3>
+                <table>
+                    <tr><td>Title:</td><td><input type="text" name="title"/></td></tr>
+                    <tr><td>Maker:</td><td><input type="text" name="maker"/></td></tr>
+                    <tr><td>Type:</td><td><select name="type">
+                                <option value="file" selected="selected">File</option>
+                                <option value="stream">Stream</option>
+                            </select></td></tr>
+                </table>
+                <div id="fileevent" class="subblock">
+                    <h4>File upload</h4>
+                    Choose a file to upload: <input name="uploadedfile" type="file" /><br />
+                    <input type="submit" value="Upload File" />                
+                </div>
+                <div id="streamevent" class="subblock">
+                    <h4>Stream details</h4>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
