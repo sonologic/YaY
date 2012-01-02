@@ -91,6 +91,7 @@
     z-index: 999;
 }
 
-.save, .cancel {
+.save, .cancel, .nav {
     cursor: pointer;
+    color: #36c;
 }

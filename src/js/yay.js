@@ -73,10 +73,15 @@ function editAudio(id) {
 
 function editShow(id) {
     $("#editshow").show();
-    $.getJSON('schedule/show.php?id='+id,function(data) {
-        data.collection='show';
+    if(id!='*')
+        $.getJSON('schedule/show.php?id='+id,function(data) {
+            data.collection='show';
+            fillForm("#editshow form",data);
+        })
+    else {
+        data={_id:'*',collection:'show'};
         fillForm("#editshow form",data);
-    });
+    }
 }
 
 function fillForm(selector,data) {
@@ -105,7 +110,7 @@ function fillForm(selector,data) {
         if(data[name]) {
             $(this).text(data[name]);
         } else {
-            $(this).text('');
+            $(this).empty();
         }
     });
     
@@ -202,6 +207,10 @@ $(document).ready(function() {
             $("#editshow").fadeOut('slow'); 
             updateShowList();
         });       
+    });
+    
+    $("#newshow").click(function() {
+        editShow('*');
     });
 
 // page is now ready, initialize the calendar...
