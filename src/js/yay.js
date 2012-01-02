@@ -46,7 +46,7 @@ function editAudio(id) {
     $("#edit .properties").empty();
     
     loading();
-    $.getJSON('upload/audio.php?id='+id,function(data) {
+    $.getJSON('upload/load.php?c=audio&id='+id,function(data) {
                 
         console.log(data);
         
@@ -74,7 +74,7 @@ function editAudio(id) {
 function editShow(id) {
     $("#editshow").show();
     if(id!='*')
-        $.getJSON('schedule/show.php?id='+id,function(data) {
+        $.getJSON('upload/load.php?c=show&id='+id,function(data) {
             data.collection='show';
             fillForm("#editshow form",data);
         })
@@ -130,7 +130,7 @@ function updateShowList() {
     $("#showlist").dataTable().fnClearTable();
     $('#showlist').dataTable( {
         'bDestroy': true,
-        "sAjaxSource": 'schedule/show.php?aa=1'
+        "sAjaxSource": 'upload/load.php?c=show&aa=1&f=_id,title,artist,teaser'
     } );    
 }
 
@@ -174,7 +174,7 @@ $(document).ready(function() {
     
     $('#audiolist').dataTable( {
         "bProcessing": true,
-        "sAjaxSource": 'upload/audio.php?aa=1'
+        "sAjaxSource": 'upload/load.php?c=audio&aa=1&f=_id,name,type,title,artist'
     } );
 
 
