@@ -134,6 +134,27 @@ function updateShowList() {
     } );    
 }
 
+function updateEpisodeList() {
+    $("#episodelist").dataTable().fnClearTable();
+    $('#episodelist').dataTable( {
+        'bDestroy': true,
+        "sAjaxSource": 'upload/load.php?c=episode&aa=1&f=_id,data,title'
+    } );    
+}
+
+function editEpisode(id) {
+    $("#editepisode").show();
+    if(id!='*')
+        $.getJSON('upload/load.php?c=episode&id='+id,function(data) {
+            data.collection='episode';
+            fillForm("#editepisode form",data);
+        })
+    else {
+        data={_id:'*',collection:'episode'};
+        fillForm("#editepisode form",data);
+    }
+}
+
 $(document).ready(function() {
 
 
@@ -165,7 +186,7 @@ $(document).ready(function() {
 
     $('#showlist').dataTable( {
         "bProcessing": true,
-        "sAjaxSource": 'schedule/show.php?aa=1'
+        "sAjaxSource": 'upload/load.php?c=show&aa=1&f=_id,title,artist,teaser'
     } );
     
     $('#showlist tbody tr').live('click', function () {
@@ -177,7 +198,7 @@ $(document).ready(function() {
 
     $('#episodelist').dataTable( {
         "bProcessing": true,
-        "sAjaxSource": 'schedule/episode.php?aa=1'
+        "sAjaxSource": 'upload/load.php?c=episode&aa=1&f=_id,data,title'
     } );
     
     $('#episodelist tbody tr').live('click', function () {
@@ -213,6 +234,22 @@ $(document).ready(function() {
         editShow('*');
     });
 
+    $("#editepisode .cancel").click(function() {
+        $("#editepisode").fadeOut('slow'); 
+    });
+
+    $("#editepisode .save").click(function() {
+        loading();
+        $.post('upload/save.php',$("#editepisode form").serialize(),function(data) {
+            loadingDone();
+            $("#editepisode").fadeOut('slow'); 
+            updateEpisodeList();
+        });       
+    });
+
+    $("#newepisode").click(function() {
+        editEpisode('*');
+    });
 // page is now ready, initialize the calendar...
 /*
                 $('#calendar').fullCalendar({

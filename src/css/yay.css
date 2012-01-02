@@ -81,7 +81,7 @@
     clear: left;
 }
 
-#editshow {
+#editshow, #editepisode {
         position: absolute;
     top: 5em;
     left: 18em;
