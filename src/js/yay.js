@@ -246,7 +246,10 @@ $(document).ready(function() {
             updateEpisodeList();
         });       
     });
-
+    
+    $("#editepisode form input[name='start']").datetimepicker({dateFormat:'yy-mm-dd'});
+    $("#editepisode form input[name='end']").datetimepicker({dateFormat:'yy-mm-dd'});
+    
     $("#newepisode").click(function() {
         editEpisode('*');
     });
