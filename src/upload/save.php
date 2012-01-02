@@ -29,31 +29,16 @@
 require_once('../config.inc');
 require_once('../include/db.php');
 
-$s=new Storage('yaydev','show');
-
-
-if(isset($_GET['aa'])) {
-    $items=$s->find();
-    $records=array();
-    foreach($items as $item) {
-        $title='unknown';
-        $teaser="";
-        $description='unknown';
-        $artist='unknown';
-
-        if(isset($item['title'])) $title=$item['title'];
-        if(isset($item['teaser'])) $teaser=$item['teaser'];
-        if(isset($item['artist'])) $artist=$item['artist'];        
-        
-        $records[]=array($item['_id'],$title,$artist,$teaser);
-    }
-    echo json_encode(array('aaData'=>$records));
-} else if(isset($_GET['id']) && preg_match('/^([0-9a-zA-Z]+)$/',$_GET['id'],$id)) {
-    $item=$s->select($id[1]);
-    echo json_encode($item);
-} else {
-    $items=$s->find();
-    echo json_encode($items);
+if(isset($_POST['collection'])&&preg_match('/^([a-z]+)$/',$_POST['collection'],$coll)) {
+    $s=new Storage('yaydev',$coll[1]);
+    unset($_POST['collection']);
+    if(!isset($_POST['_id']) || $_POST['_id']=='*') $_POST['_id']=uniqid();
+    $s->store($_POST);
 }
 
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 ?>

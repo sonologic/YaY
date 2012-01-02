@@ -17,6 +17,7 @@
     </head>
     <body>
         <div id="wrapper">
+            <div id="loading"><div><img src="images/spinner.gif"/><br/>LOADING</div></div>
             <div id="mainmenu">
                 <span class="inactive" data-applet="shows">Shows</span>
                 <span class="inactive" data-applet="episodes">Episodes</span>
@@ -43,6 +44,42 @@
                 <div class="properties">
 
                 </div>
+            </div>
+            <div id="editshow" class="applet">
+                <form method="POST">
+                    <input type="hidden" name="collection"/>
+                    <input type="hidden" name="_id"/>
+                    <table>
+                        <tr>
+                            <td>Title</td><td><input type="text" name="title"/></td>                        
+                        </tr>
+                        <tr>
+                            <td>Slug</td><td><input type="text" name="slug"/></td>                        
+                        </tr>
+                        <tr>
+                            <td>Type:</td><td>
+                                <select name="type">
+                                    <option value="prerecord">Pre-recorded</option>
+                                    <option value="pull">Stream pull</option>
+                                    <option value="push">Stream push</option>
+                                    <option value="feed">Feed</option>
+                                </select>
+                            </td>
+                        <tr>
+                            <td>Production</td><td><input type="text" name="artist"/></td>
+                        </tr>
+                        <tr>
+                            <td>Teaser text:</td><td><textarea name="teaser"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td><td><textarea name="description"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td>Category:</td><td><input type="text" name="category"/></td>
+                        </tr>
+                        <tr><td><span class="save">save</span></td><td><span class="cancel">cancel</span></td></tr>
+                    </table>
+                </form>
             </div>
             <div id="audio" class="applet">
                 <table cellpadding="0" cellspacing="0" border="0" class="display" id="audiolist">
@@ -89,6 +126,27 @@
                             <th>Production</th>
                         </tr>
 
+                    </tfoot>
+                </table>
+            </div>
+                        <div id="episodes" class="applet">
+                <table cellpadding="0" cellspacing="0" border="0" class="display" id="episodelist">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>Name</th>
+                            <th>Production</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>id</th>
+                            <th>Name</th>
+                            <th>Production</th>
+                        </tr>
                     </tfoot>
                 </table>
             </div>

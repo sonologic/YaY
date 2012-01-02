@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2012, "Koen Martens" <gmc@sonologic.nl>
  * All rights reserved.
@@ -26,32 +27,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  
  */
-
 class Storage {
-    public function __construct($db,$collection) {
-        $this->m=new Mongo();
-        $this->db=$this->m->$db;
-        $this->collection=$this->db->$collection;
+
+    public function __construct($db, $collection) {
+        $this->m = new Mongo();
+        $this->db = $this->m->$db;
+        $this->collection = $this->db->$collection;
     }
-    
+
     public function find() {
-        $cursor=$this->collection->find();
-        $rv=array();
-        foreach($cursor as $obj) {
-            $rv[]=$obj;
+        $cursor = $this->collection->find();
+        $rv = array();
+        foreach ($cursor as $obj) {
+            $rv[] = $obj;
         }
         return $rv;
     }
-    
+
     public function select($id) {
         return $this->collection->findOne(array(
-            '_id' => $id
-        ));
+                    '_id' => $id
+                ));
     }
-    
+
     public function store($obj) {
-        $this->collection->insert($obj);
+        if (is_array($obj)) {
+            $newobj = new StdClass();
+            foreach ($obj as $key => $value) {
+                $newobj->$key = $value;
+            }
+            $obj = $newobj;
+        }
+        $id = sprintf("%s", $obj->_id);
+        unset($obj->_id);
+        $rv = $this->collection->update(array('_id' => $id), array('$set' => $obj), array('safe' => true, "upsert" => true));
     }
+
 }
 
 ?>

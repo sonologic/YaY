@@ -26,6 +26,14 @@
  *  
  */
 
+function loading() {
+    $("#loading").show();
+}
+
+function loadingDone() {
+    $("#loading").hide();
+}
+
 function editAudio(id) {
     console.log('edit '+id)
     
@@ -37,7 +45,9 @@ function editAudio(id) {
     
     $("#edit .properties").empty();
     
+    loading();
     $.getJSON('upload/audio.php?id='+id,function(data) {
+                
         console.log(data);
         
         $("#edit input[name='title']").val('');
@@ -53,10 +63,70 @@ function editAudio(id) {
         for(var key in data) {
             console.log(key);
        
-        $("#edit .properties").append('<div>'+key+" => "+data[key]+"</div>");
+            $("#edit .properties").append('<div>'+key+" => "+data[key]+"</div>");
+        
+        }
+        loadingDone();
+    });
+    
+}
+
+function editShow(id) {
+    $("#editshow").show();
+    $.getJSON('schedule/show.php?id='+id,function(data) {
+        data.collection='show';
+        fillForm("#editshow form",data);
+    });
+}
+
+function fillForm(selector,data) {
+    console.log('fillForm('+selector+','+data+')');
+    
+    $(selector+" input[type='text']").each(function(index) {
+        var name=$(this).attr('name'); 
+        if(data[name]) {
+            $(this).val(data[name]);
+        } else {
+            $(this).val('');
         }
     });
     
+    $(selector+" input[type='hidden']").each(function(index) {
+        var name=$(this).attr('name'); 
+        if(data[name]) {
+            $(this).val(data[name]);
+        } else {
+            $(this).val('');
+        }
+    });
+    
+    $(selector+" textarea").each(function(index) {
+        var name=$(this).attr('name');
+        if(data[name]) {
+            $(this).text(data[name]);
+        } else {
+            $(this).text('');
+        }
+    });
+    
+    $(selector+" select").each(function(index) {
+        var name=$(this).attr('name');
+        console.log(name);
+        $(selector+" select[name='"+name+"'] option").removeAttr('selected');
+        if(data[name]) {
+            console.log('select '+data[name]);
+            console.log(selector+" selet[name='"+name+"'] option[value='"+data[name]+"']");
+            $(selector+" select[name='"+name+"'] option[value='"+data[name]+"']").attr('selected','selected');
+        }
+    });
+}
+
+function updateShowList() {
+    $("#showlist").dataTable().fnClearTable();
+    $('#showlist').dataTable( {
+        'bDestroy': true,
+        "sAjaxSource": 'schedule/show.php?aa=1'
+    } );    
 }
 
 $(document).ready(function() {
@@ -83,24 +153,55 @@ $(document).ready(function() {
 
 
     $('#audiolist tbody tr').live('click', function () {
-       var tds=$('td',this);
+        var tds=$('td',this);
        
-       editAudio($(tds[0]).text());
+        editAudio($(tds[0]).text());
     });
 
     $('#showlist').dataTable( {
         "bProcessing": true,
         "sAjaxSource": 'schedule/show.php?aa=1'
     } );
+    
+    $('#showlist tbody tr').live('click', function () {
+        var tds=$('td',this);
+       
+        editShow($(tds[0]).text());
+    });
+
+
+    $('#episodelist').dataTable( {
+        "bProcessing": true,
+        "sAjaxSource": 'schedule/episode.php?aa=1'
+    } );
+    
+    $('#episodelist tbody tr').live('click', function () {
+        var tds=$('td',this);
+       
+        editEpisode($(tds[0]).text());
+    });
 
 
 
     $('#edit .cancel').click(function() {
-       $("#edit").fadeOut('slow'); 
+        $("#edit").fadeOut('slow'); 
     });
 
     $('#edit .save').click(function() {
-       $("#edit").fadeOut('slow'); 
+        $("#edit").fadeOut('slow'); 
+    });
+    
+    $("#editshow .cancel").click(function() {
+        $("#editshow").fadeOut('slow'); 
+    });
+    
+    $("#editshow .save").click(function() {
+        loading();
+        $.post('upload/save.php',$("#editshow form").serialize(),function(data) {
+            loadingDone();
+            $("#editshow").fadeOut('slow'); 
+            updateShowList();
+        });       
     });
 
 // page is now ready, initialize the calendar...

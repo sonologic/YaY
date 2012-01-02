@@ -21,6 +21,27 @@
     display: none;
 }
 
+#loading {
+    display: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(100,100,100,0.7);
+}
+#loading div {
+    background: white;
+    position: relative;
+    width: 15em;
+    height: 8em;
+    border: 1px solid black;
+    margin: auto;
+    text-align: center;
+    padding-top: 1em;
+}
+
 #mainmenu {
     width: 100%;
     border: 1px solid gray;
@@ -52,10 +73,24 @@
     width: 80%;
     background: #bbb;
     border: solid black 1px;
-    z-index: 10000;
+    z-index: 999;
 }
 
 #edit div.label {
     float: left;
     clear: left;
+}
+
+#editshow {
+        position: absolute;
+    top: 5em;
+    left: 18em;
+    width: 60%;
+    background: #bbb;
+    border: solid black 1px;
+    z-index: 999;
+}
+
+.save, .cancel {
+    cursor: pointer;
 }
