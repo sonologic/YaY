@@ -7,14 +7,14 @@
         <link rel='stylesheet' type='text/css' href='css/fullcalendar.css'>
         <link rel='stylesheet' type='text/css' href='css/demo_table.css'>
         <link rel='stylesheet' type='text/css' href='css/demo_table_ui.css'>
-                <link rel='stylesheet' type='text/css' href='css/jquery.ui.css'>
+        <link rel='stylesheet' type='text/css' href='css/jquery.ui.css'>
 
         <script src="js/jquery.js"></script>
         <script src="js/jquery.ui.widget.js"></script>
         <script src="js/jquery.iframe-transport.js"></script>
         <script src="js/jquery.fileupload.js"></script>        
         <script src="js/jquery.dataTables.js"></script>
-                <script src="js/jquery.ui.js"></script>
+        <script src="js/jquery.ui.js"></script>
 
         <script src="js/jquery.timepicker.js"></script>
         <script src="js/upload.js"></script>
@@ -38,14 +38,32 @@
             <div id="edit" class="applet">
                 <img class="waveform" src="images/loading_waveform.png"/>
                 <br/>
-                ID: <span class="audioid">-</span><br/>
-                <span class="save">save</span> - <span class="cancel">cancel</span><br/>
-                Title: <input type="text" name="title"/><br/>
-                Production: <input type="text" name="production"/><br/>
-                Teaser: <br/>
-                <textarea name="teaser"></textarea><br/>
-                Shownotes: <br/>
-                <textarea name="shownotes"></textarea></br>                
+                <form>
+                    <span class="save nav">save</span> - <span class="cancel nav">cancel</span> - <span class="toepisode nav">create episode from audiofile</span><br/>
+                    <input type="hidden" name="_id"/>
+                    <input type="hidden" name="collection"/>
+
+                    <table>
+                        <tr><td>Title</td><td><input type="text" name="title"/></td></tr>
+                        <tr><td>Production</td><td><input type="text" name="artist"/></td></tr>
+
+                        <tr>
+                            <td>Rights/copyright</td><td><input type="text" name="rights"/></td>
+                        </tr>                    
+                        <tr>
+                            <td>Album/station</td><td><input type="text" name="album"/></td>
+                        </tr>
+                        <tr>
+                            <td>Artist/station url</td><td><input type="text" name="artisturl"/></td>
+                        </tr>
+                        <tr>
+                            <td>Track url</td><td><input type="text" name="trackurl"/></td>
+                        </tr>
+                        <tr><td>Teaser</td><td><textarea name="teaser"></textarea></td></tr>
+                        <tr><td>Shownotes</td><td><textarea name="shownotes"></textarea></td></tr>    
+                    </table>
+
+                </form>
                 <div class="properties">
 
                 </div>
@@ -116,13 +134,13 @@
                                 </select>
                             </td>
                         <tr>
-                            <td>Production</td><td><input type="text" name="artist"/></td>
+                            <td>Production/artist</td><td><input type="text" name="artist"/></td>
                         </tr>
                         <tr>
                             <td>Teaser text:</td><td><textarea name="teaser"></textarea></td>
                         </tr>
                         <tr>
-                            <td>Description:</td><td><textarea name="description"></textarea></td>
+                            <td>Shownotes:</td><td><textarea name="description"></textarea></td>
                         </tr>
                         <tr>
                             <td>Topics:</td><td><input type="text" name="category"/></td>

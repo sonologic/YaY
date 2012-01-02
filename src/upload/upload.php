@@ -68,7 +68,12 @@ function extractMeta($uuid, $type, &$file) {
                     case 'title':
                         $file[$key] = $value;
                         break;
-
+                    case 'webOffAudioFile':
+                        $file['trackurl']=$value;
+                        break;
+                    case 'webOffArtist':
+                        $file['artisturl']=$value;
+                        break;
                     case 'copyright':
                         if ($value !== NULL) {
                             if (isset($tag['copyrightInfo']) && $tag['copyrightInfo'] !== NULL) {

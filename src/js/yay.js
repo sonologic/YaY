@@ -50,6 +50,7 @@ function editAudio(id) {
                 
         console.log(data);
         
+        /*
         $("#edit input[name='title']").val('');
         $("#edit input[name='production']").val('aa');
         $("#edit .teaser").empty();
@@ -59,7 +60,9 @@ function editAudio(id) {
         $("#edit input[name='production']").val(data.artist);
         $("#edit textarea[name='teaser']").text(data.teaser);
         $("#edit textarea[name='shownotes']").text(data.shownotes);
-        
+        */
+       data.collection='audio';
+       fillForm('#edit form',data);
         for(var key in data) {
             console.log(key);
        
@@ -214,7 +217,12 @@ $(document).ready(function() {
     });
 
     $('#edit .save').click(function() {
-        $("#edit").fadeOut('slow'); 
+        loading();
+        $.post('upload/save.php',$("#edit form").serialize(),function(data) {
+            loadingDone();
+            $("#edit").fadeOut('slow'); 
+            updateShowList();
+        });                
     });
     
     $("#editshow .cancel").click(function() {
