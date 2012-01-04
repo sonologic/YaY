@@ -64,11 +64,11 @@ function editAudio(id) {
             $("#edit .properties").append('<div>'+key+" => "+data[key]+"</div>");
         
         }
-        if(data.transcoded && data.transcoded==1) {
-            $("#edit .player").attr('src','upload/uploads/'+id+'.flac');
+        if(data.has_flac && data.has_flac==1) {
+            $("#edit .player").attr('src','upload/uploads/'+id+'.mp3');
             loadingDone();
         } else {
-            transcode(id);
+            transcode(id,'flac');
         }
         
     });
@@ -177,10 +177,11 @@ function showTranscodeProgress() {
     
 }
 
-function transcode(id) {
+function transcode(id,fmt) {
+    console.log('transcode '+id+' '+fmt)
        loading();
        
-       $.getJSON('upload/transcode.php?id='+id,function(data) {                      
+       $.getJSON('upload/transcode.php?id='+id+'&f='+fmt,function(data) {                      
             if(data.error) {
                 loadingDone();
                 alert('Error: '+data.error);
@@ -297,7 +298,7 @@ $(document).ready(function() {
     
     $("#edit .transcode").click(function() {
        var id=$("#edit form input[name='_id']").val();
-       transcode(id);
+       transcode(id,$(this).attr('data-fmt'));
     });
 // page is now ready, initialize the calendar...
 /*

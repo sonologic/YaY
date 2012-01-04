@@ -32,14 +32,17 @@ require_once('../include/db.php');
 
 if (!isset($_GET['p'])) {
     if (isset($_GET['id']) && preg_match('/^([a-zA-Z0-9]+)$/', $_GET['id'], $id)) {
-
+        $fmt = 'flac';
+        if (isset($_GET['f']) && preg_match('/^(mp3|flac|ogg)$/', $_GET['f'], $ufmt)) {
+            $fmt = $ufmt[1];
+        }
         $s = new Storage('yaydev', 'audio');
 
         $meta = $s->select($id[1]);
 
         if ($meta) {
 
-            $cmd = '/opt/local/bin/sox -S -t ' . $meta['type'] . ' uploads/' . $id[1] . ' uploads/' . $id[1] . '.flac > /dev/null 2> /tmp/' . $id[1] . ' & echo $!';
+            $cmd = '/opt/local/bin/sox -S -t ' . $meta['type'] . ' uploads/' . $id[1] . ' uploads/' . $id[1] . '.'.$fmt.' > /dev/null 2> /tmp/' . $id[1] . ' & echo $!';
             //echo $cmd;
             exec($cmd, $op);
 
@@ -47,6 +50,7 @@ if (!isset($_GET['p'])) {
             $_SESSION['pid'] = (int) $op[0];
             $_SESSION['id'] = $id[1];
             $_SESSION['fpos'] = 0;
+            $_SESSION['fmt'] = $fmt;
             session_write_close();
 
             echo json_encode($meta);
@@ -60,6 +64,7 @@ if (!isset($_GET['p'])) {
     $pid = -1;
     $id = NULL;
     $pos = 0;
+    $fmt = 'flac';
 
     session_start();
     if (isset($_SESSION['pid']))
@@ -68,6 +73,8 @@ if (!isset($_GET['p'])) {
         $id = $_SESSION['id'];
     if (isset($_SESSION['fpos']))
         $pos = $_SESSION['fpos'];
+    if (isset($_SESSION['fmt']))
+        $fmt = $_SESSION['fmt'];
     //session_write_close();
 
     if ($id === NULL) {
@@ -84,10 +91,10 @@ if (!isset($_GET['p'])) {
                 //echo "got $ss <br/>";
                 $l = preg_split("/\r/", $ss);
                 //var_dump($l);
-                if(count($l)>2) {
-                  $s = $l[1];
+                if (count($l) > 2) {
+                    $s = $l[1];
                 } else {
-                    $s='';
+                    $s = '';
                 }
             }
             $pos = ftell($fp);
@@ -105,9 +112,9 @@ if (!isset($_GET['p'])) {
             $s = new Storage('yaydev', 'audio');
 
             $meta = $s->select($id);
-            
-            if(!isset($meta['transcoded'])) {
-                $meta['transcoded']=1;
+
+            if (!isset($meta['has_'.$fmt])) {
+                $meta['has_'.$fmt] = 1;
                 $s->store($meta);
             }
         }
