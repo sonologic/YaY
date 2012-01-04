@@ -37,9 +37,13 @@
             </div>
             <div id="edit" class="applet">
                 <img class="waveform" src="images/loading_waveform.png"/>
+                <audio class="player" controls></audio>
                 <br/>
                 <form>
-                    <span class="save nav">save</span> - <span class="cancel nav">cancel</span> - <span class="toepisode nav">create episode from audiofile</span><br/>
+                    <span class="save nav">save</span> - 
+                    <span class="cancel nav">cancel</span> - 
+                    <span class="toepisode nav">create episode from audiofile</span> - 
+                    <span class="transcode nav">transcode to internal format (flac)</span><br/>
                     <input type="hidden" name="_id"/>
                     <input type="hidden" name="collection"/>
 
@@ -221,6 +225,10 @@
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+            <div id="transcode" class="applet">
+                Transcoding..<br/>
+                <pre id="transcodeprogress"></pre>
             </div>
         </div>
     </body>

@@ -81,6 +81,11 @@
     clear: left;
 }
 
+#edit .waveform {
+    width: 800px;
+    height: 160px;
+}
+
 #editshow, #editepisode {
         position: absolute;
     top: 5em;
@@ -96,6 +101,15 @@
     color: #36c;
 }
 
+#transcode {
+    position: absolute;
+    right: 5em;
+    bottom: 5em;
+    border: solid black 1px;
+    background: #bbb;
+    z-index: 1001;
+        
+}
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
 .ui-timepicker-div dl { text-align: left; }

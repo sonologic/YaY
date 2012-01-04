@@ -34,9 +34,7 @@ function loadingDone() {
     $("#loading").hide();
 }
 
-function editAudio(id) {
-    console.log('edit '+id)
-    
+function editAudio(id) {    
     $("#edit .audioid").text(id);
     $("#edit .waveform").attr('src','images/loading_waveform.png');
     $("#edit .waveform").attr('src','upload/waveform.php?id='+id);
@@ -47,8 +45,6 @@ function editAudio(id) {
     
     loading();
     $.getJSON('upload/load.php?c=audio&id='+id,function(data) {
-                
-        console.log(data);
         
         /*
         $("#edit input[name='title']").val('');
@@ -64,12 +60,17 @@ function editAudio(id) {
        data.collection='audio';
        fillForm('#edit form',data);
         for(var key in data) {
-            console.log(key);
        
             $("#edit .properties").append('<div>'+key+" => "+data[key]+"</div>");
         
         }
-        loadingDone();
+        if(data.transcoded && data.transcoded==1) {
+            $("#edit .player").attr('src','upload/uploads/'+id+'.flac');
+            loadingDone();
+        } else {
+            transcode(id);
+        }
+        
     });
     
 }
@@ -156,6 +157,38 @@ function editEpisode(id) {
         data={_id:'*',collection:'episode'};
         fillForm("#editepisode form",data);
     }
+}
+
+function showTranscodeProgress() {
+                $.getJSON('upload/transcode.php?p=1',function(data) {
+                    if(data.progress && data.progress.length)
+                        $("#transcodeprogress").text(data.progress)
+                    if(data.running==1) {
+                        setTimeout("showTranscodeProgress();",100);
+                    } else {
+                        loadingDone();
+                        $("#transcode").hide();
+                        $("#transcodeprogress").text('');
+                        var id=$("#edit form input[name='_id']").val();
+                        $("#edit .player").attr('src','upload/uploads/'+id+'.flac');
+                        editAudio(id);
+                    }
+                });
+    
+}
+
+function transcode(id) {
+       loading();
+       
+       $.getJSON('upload/transcode.php?id='+id,function(data) {                      
+            if(data.error) {
+                loadingDone();
+                alert('Error: '+data.error);
+            } else {
+                $("#transcode").show();
+                showTranscodeProgress();
+            }
+       });
 }
 
 $(document).ready(function() {
@@ -260,6 +293,11 @@ $(document).ready(function() {
     
     $("#newepisode").click(function() {
         editEpisode('*');
+    });
+    
+    $("#edit .transcode").click(function() {
+       var id=$("#edit form input[name='_id']").val();
+       transcode(id);
     });
 // page is now ready, initialize the calendar...
 /*
