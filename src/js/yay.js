@@ -45,32 +45,24 @@ function editAudio(id) {
     
     loading();
     $.getJSON('upload/load.php?c=audio&id='+id,function(data) {
-        
-        /*
-        $("#edit input[name='title']").val('');
-        $("#edit input[name='production']").val('aa');
-        $("#edit .teaser").empty();
-        $("#edit .shownotes").empty();
-        
-        $("#edit input[name='title']").val(data.title);
-        $("#edit input[name='production']").val(data.artist);
-        $("#edit textarea[name='teaser']").text(data.teaser);
-        $("#edit textarea[name='shownotes']").text(data.shownotes);
-        */
+        $("#edit").data('subject',data);
        data.collection='audio';
        fillForm('#edit form',data);
+       
+        if(!data.has_flac || data.has_flac!=1) {
+            transcode(id,'flac');
+            return;
+        }
+
         for(var key in data) {
        
             $("#edit .properties").append('<div>'+key+" => "+data[key]+"</div>");
         
         }
-        if(data.has_flac && data.has_flac==1) {
-            $("#edit .player").attr('src','upload/uploads/'+id+'.mp3');
-            loadingDone();
-        } else {
-            transcode(id,'flac');
-        }
         
+        $("#edit .player").attr('src','upload/uploads/'+id+'.'+$("#edit .playerfmt").val());
+        loadingDone();
+
     });
     
 }
@@ -159,19 +151,19 @@ function editEpisode(id) {
     }
 }
 
-function showTranscodeProgress() {
+function showTranscodeProgress(fmt) {
                 $.getJSON('upload/transcode.php?p=1',function(data) {
                     if(data.progress && data.progress.length)
-                        $("#transcodeprogress").text(data.progress)
+                        $("#transcodeprogress").text(fmt+': '+data.progress)
                     if(data.running==1) {
-                        setTimeout("showTranscodeProgress();",100);
+                        setTimeout("showTranscodeProgress('"+fmt+"');",100);
                     } else {
                         loadingDone();
                         $("#transcode").hide();
                         $("#transcodeprogress").text('');
                         var id=$("#edit form input[name='_id']").val();
-                        $("#edit .player").attr('src','upload/uploads/'+id+'.flac');
                         editAudio(id);
+                        $("#edit .player").attr('src','upload/uploads/'+id+'.'+fmt);
                     }
                 });
     
@@ -187,7 +179,7 @@ function transcode(id,fmt) {
                 alert('Error: '+data.error);
             } else {
                 $("#transcode").show();
-                showTranscodeProgress();
+                showTranscodeProgress(fmt);
             }
        });
 }
@@ -299,6 +291,20 @@ $(document).ready(function() {
     $("#edit .transcode").click(function() {
        var id=$("#edit form input[name='_id']").val();
        transcode(id,$(this).attr('data-fmt'));
+    });
+    
+    $("#edit .playerfmt").change(function(event) {
+       console.log(event);
+       var fmt=$("#edit .playerfmt").val();
+       
+       var meta=$("#edit").data('subject');
+       
+       if(fmt!='flac' && !(meta['has_'+fmt] && meta['has_'+fmt]==1)) {
+           transcode(meta._id,fmt);
+       } else {
+           $("#edit .player").attr('src','upload/uploads/'+meta._id+'.'+fmt);
+       }
+       
     });
 // page is now ready, initialize the calendar...
 /*

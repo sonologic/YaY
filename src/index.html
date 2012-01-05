@@ -30,13 +30,18 @@
                 <span class="inactive" data-applet="upload">Upload</span>
             </div>
             <div id="workarea">
-
+                
             </div>
             <div id="upload" class="applet">
                 <input id="fileupload" type="file" name="files[]" multiple>
             </div>
             <div id="edit" class="applet">
                 <img class="waveform" src="images/loading_waveform.png"/><br/>
+                Pre-listen as: <select class="playerfmt">
+                                <option value="flac">flac</option>
+                                <option value="ogg">ogg</option>
+                                <option value="mp3">mp3</option>
+                               </select><br/>
                 <audio class="player" controls></audio><br/>
                 <br/>
                 <form>
