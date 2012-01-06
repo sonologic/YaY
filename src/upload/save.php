@@ -34,7 +34,10 @@ if(isset($_POST['collection'])&&preg_match('/^([a-z]+)$/',$_POST['collection'],$
     unset($_POST['collection']);
     if(!isset($_POST['_id']) || $_POST['_id']=='*') $_POST['_id']=uniqid();
     $s->store($_POST);
+    echo json_encode($_POST);
 }
+
+echo json_encode(array('error'=>'usage error'));
 
 
 /*

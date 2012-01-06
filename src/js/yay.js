@@ -34,6 +34,34 @@ function loadingDone() {
     $("#loading").hide();
 }
 
+function yaySON(url,callback) {
+    loading();
+    $.getJSON(url,function(data) {
+        if(callback(data)) {
+            loadingDone();
+        }
+    });
+}
+
+function yayPOST(url,post,callback) {
+    loading();
+    $.post(url,post,function(data) {
+        if(callback(data)) {
+            loadingDone();
+        }
+    });
+}
+
+function padNum(i,len) {
+    var s = i.toString();
+    
+    while(s.length<len) {
+        s='0'+s;
+    }
+    
+    return s;
+}
+
 function editAudio(id) {    
     $("#edit .audioid").text(id);
     $("#edit .waveform").attr('src','images/loading_waveform.png');
@@ -46,8 +74,8 @@ function editAudio(id) {
     loading();
     $.getJSON('upload/load.php?c=audio&id='+id,function(data) {
         $("#edit").data('subject',data);
-       data.collection='audio';
-       fillForm('#edit form',data);
+        data.collection='audio';
+        fillForm('#edit form',data);
        
         if(!data.has_flac || data.has_flac!=1) {
             transcode(id,'flac');
@@ -75,7 +103,10 @@ function editShow(id) {
             fillForm("#editshow form",data);
         })
     else {
-        data={_id:'*',collection:'show'};
+        data={
+            _id:'*',
+            collection:'show'
+        };
         fillForm("#editshow form",data);
     }
 }
@@ -146,42 +177,119 @@ function editEpisode(id) {
             fillForm("#editepisode form",data);
         })
     else {
-        data={_id:'*',collection:'episode'};
+        data={
+            _id:'*',
+            collection:'episode'
+        };
         fillForm("#editepisode form",data);
     }
 }
 
 function showTranscodeProgress(fmt) {
-                $.getJSON('upload/transcode.php?p=1',function(data) {
-                    if(data.progress && data.progress.length)
-                        $("#transcodeprogress").text(fmt+': '+data.progress)
-                    if(data.running==1) {
-                        setTimeout("showTranscodeProgress('"+fmt+"');",100);
-                    } else {
-                        loadingDone();
-                        $("#transcode").hide();
-                        $("#transcodeprogress").text('');
-                        var id=$("#edit form input[name='_id']").val();
-                        editAudio(id);
-                        $("#edit .player").attr('src','upload/uploads/'+id+'.'+fmt);
-                    }
-                });
+    $.getJSON('upload/transcode.php?p=1',function(data) {
+        if(data.progress && data.progress.length)
+            $("#transcodeprogress").text(fmt+': '+data.progress)
+        if(data.running==1) {
+            setTimeout("showTranscodeProgress('"+fmt+"');",100);
+        } else {
+            loadingDone();
+            $("#transcode").hide();
+            $("#transcodeprogress").text('');
+            var id=$("#edit form input[name='_id']").val();
+            editAudio(id);
+            $("#edit .player").attr('src','upload/uploads/'+id+'.'+fmt);
+        }
+    });
     
 }
 
 function transcode(id,fmt) {
     console.log('transcode '+id+' '+fmt)
-       loading();
+    loading();
        
-       $.getJSON('upload/transcode.php?id='+id+'&f='+fmt,function(data) {                      
-            if(data.error) {
-                loadingDone();
-                alert('Error: '+data.error);
-            } else {
-                $("#transcode").show();
-                showTranscodeProgress(fmt);
+    $.getJSON('upload/transcode.php?id='+id+'&f='+fmt,function(data) {                      
+        if(data.error) {
+            loadingDone();
+            alert('Error: '+data.error);
+        } else {
+            $("#transcode").show();
+            showTranscodeProgress(fmt);
+        }
+    });
+}
+
+function updateScheduleChooser() {
+    $.getJSON('upload/load.php?c=schedule',function(data) {
+        console.log(data);
+        $("#schedules .schedulechooser").empty();
+        for(var i=0;i<data.length;i++) {
+            var opt='<option value="'+data[i]._id+'"';
+            if($.Storage.get("schedule")==data[i]._id) opt=opt+' selected="selected"';
+            opt=opt+'>'+data[i].name+'</option>';
+            $("#schedules .schedulechooser").append(opt);
+        }
+        var opt='<option value="*" ';
+        if(data.length==0) opt=opt+'selected="selected"';
+        opt=opt+'>New..</option>';
+        $("#schedules .schedulechooser").append(opt);
+        if(data.length==0) {
+            $("#newschedulename").fadeIn('slow');
+            $("#createschedule").fadeIn('slow');
+        } else {
+            $("#newschedulename").fadeOut('slow');
+            $("#createschedule").fadeOut('slow');
+        }
+    });
+}
+
+function updateSchedules() {                
+    updateScheduleChooser();
+
+    if($.Storage.get("schedule")!=null) {
+        $("#calendar").empty();
+        yaySON('upload/load.php?c=showevent',function(data) {
+            $('#calendar').fullCalendar({
+                // put your options and callbacks here
+                dayClick: function (date, allDay, jsEvent, view) {
+                    console.log(date);
+                    console.log(allDay);
+                    console.log(jsEvent);
+                    console.log(view);
+                    if(!allDay) {
+                        loading();
+                        yaySON('upload/load.php?c=show',function(data) {
+                            $("#showchooser").empty();
+                            for(var i=0;i<data.length;i++) {
+                                var opt='<option value="'+data[i]._id+'" data-title="'+data[i].title+'">'+data[i].title+'</option>';
+                                $("#showchooser").append(opt);
+                            }
+                      
+                            $("#scheduleshow").fadeIn();
+                            $("#showscheduleform input[name='start']").val(
+                            date.getFullYear()+'/'+padNum(date.getMonth()+1,2)+'/'+padNum(date.getDate(),2)+' '+
+                                padNum(date.getHours(),2)+':'+padNum(date.getMinutes(),2)
+                        );
+                            date.setTime(date.getTime()+3600000);
+                            $("#showscheduleform input[name='end']").val(
+                            date.getFullYear()+'/'+padNum(date.getMonth()+1,2)+'/'+padNum(date.getDate(),2)+' '+
+                                padNum(date.getHours(),2)+':'+padNum(date.getMinutes(),2)
+                        );
+                            return true;
+                        });
+                    }
+                }
+            });
+                
+            $("#calendar").fullCalendar('changeView','agendaWeek');
+            for(var i=0;i<data.length;i++) {
+                data[i].allDay=data[i].allDay=='true';
             }
-       });
+            $("#calendar").fullCalendar('addEventSource',data);
+            return true;
+        });
+    } else {
+        $("#calendar").empty();
+    }
 }
 
 $(document).ready(function() {
@@ -196,10 +304,68 @@ $(document).ready(function() {
             $("#mainmenu span").addClass('inactive');
             $(this).removeClass('inactive');
             $(this).addClass('active');
+            if($(this).data('applet')=='schedules') {
+                updateSchedules();
+            }
         }
+        
     });
                 
+    $("#schedules .schedulechooser").change(function() {
+        if($("#schedules .schedulechooser").val()=='*') {
+            $("#newschedulename").fadeIn('slow');
+            $("#createschedule").fadeIn('slow');
+        } else {
+            $("#newschedulename").fadeOut('slow');
+            $("#createschedule").fadeOut('slow');
+            $.Storage.set('schedule',$("#schedules .schedulechooser").val());
+            updateSchedules();
+        }
+    });
     
+    $("#createschedule").click(function() {
+        loading();
+        $.post('upload/save.php','collection=schedule&name='+$("#newschedulename").val()+'&_id=*',function(data) {
+            loadingDone();            
+            updateScheduleChooser();
+        });    
+    });
+    
+    $("#scheduleshow .cancel").click(function() {
+        $("#scheduleshow").fadeOut();
+    });
+    
+    $("#scheduleshow .save").click(function() {
+        var startt = new Date($("#showscheduleform input[name='start']").val()).getTime()/1000;
+        var endt = new Date($("#showscheduleform input[name='end']").val()).getTime()/1000;
+        var e = [ {
+                title: $("#showscheduleform select option[value='"+$("#showchooser").val()+"']").text(),
+                show: $("#showchooser").val(),
+                start: startt,
+                end: endt,
+                allDay: false
+            } ];
+        console.log(e);
+        yayPOST('upload/save.php',
+        'collection=showevent'+
+            '&sc='+$.Storage.get('schedule')+
+            '&sh='+e[0].show+
+            '&title='+e[0].title+
+            '&start='+e[0].start+
+            '&end='+e[0].end+
+            '&allDay='+e[0].allDay,
+        function(data) {
+            console.log(data);
+            $("#scheduleshow").fadeOut('slow');
+            e[0]._id=data._id;
+            e[0].id=data._id;
+        
+        $("#calendar").fullCalendar('addEventSource',e);
+        $("#calendar").fullCalendar('render');
+                    return true;
+        }
+    );
+    });
     
     $('#audiolist').dataTable( {
         "bProcessing": true,
@@ -281,33 +447,52 @@ $(document).ready(function() {
         });       
     });
     
-    $("#editepisode form input[name='start']").datetimepicker({dateFormat:'yy-mm-dd'});
-    $("#editepisode form input[name='end']").datetimepicker({dateFormat:'yy-mm-dd'});
+    $("#editepisode form input[name='start']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
+    $("#editepisode form input[name='end']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
+    $("#showscheduleform input[name='start']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
+    $("#showscheduleform input[name='end']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
     
     $("#newepisode").click(function() {
         editEpisode('*');
     });
     
     $("#edit .transcode").click(function() {
-       var id=$("#edit form input[name='_id']").val();
-       transcode(id,$(this).attr('data-fmt'));
+        var id=$("#edit form input[name='_id']").val();
+        transcode(id,$(this).attr('data-fmt'));
     });
     
     $("#edit .playerfmt").change(function(event) {
-       console.log(event);
-       var fmt=$("#edit .playerfmt").val();
+        console.log(event);
+        var fmt=$("#edit .playerfmt").val();
        
-       var meta=$("#edit").data('subject');
+        var meta=$("#edit").data('subject');
        
-       if(fmt!='flac' && !(meta['has_'+fmt] && meta['has_'+fmt]==1)) {
-           transcode(meta._id,fmt);
-       } else {
-           $("#edit .player").attr('src','upload/uploads/'+meta._id+'.'+fmt);
-       }
+        if(fmt!='flac' && !(meta['has_'+fmt] && meta['has_'+fmt]==1)) {
+            transcode(meta._id,fmt);
+        } else {
+            $("#edit .player").attr('src','upload/uploads/'+meta._id+'.'+fmt);
+        }
        
     });
-// page is now ready, initialize the calendar...
-/*
+    
+    $("#newschedulename").click(function() {
+        if($("#newschedulename").val()=='New schedule name..')
+            $("#newschedulename").val('');
+    });
+    $("#newschedulename").focusout(function() {
+        if($("#newschedulename").val()=='')
+            $("#newschedulename").val('New schedule name..');        
+    });
+    // page is now ready, initialize the calendar...
+    /*
                 $('#calendar').fullCalendar({
                     // put your options and callbacks here
                     dayClick: function (date, allDay, jsEvent, view) {
@@ -336,5 +521,5 @@ $(document).ready(function() {
                         $("#streamevent").hide();                        
                     }
                 });
-*/
+     */
 });

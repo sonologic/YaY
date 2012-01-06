@@ -86,6 +86,15 @@
     height: 160px;
 }
 
+#scheduleshow {
+    position: absolute;
+    top: 2em;
+    left: 2em;
+    width: 60%;
+    background: #bbb;
+    border: solid 1px black;
+}
+
 #editshow, #editepisode {
         position: absolute;
     top: 5em;
