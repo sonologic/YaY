@@ -612,8 +612,12 @@ $(document).ready(function() {
         progress: function(e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
             Console.log(progress);
+        },
+        send: function(e,data) {
+            loading();
         }
     });
+    
     //
     // select initial applet
     //
