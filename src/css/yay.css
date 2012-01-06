@@ -119,6 +119,16 @@
     z-index: 1001;
         
 }
+
+input {
+    width: 40em;
+}
+
+textarea {
+    width: 40em;
+    height: 5em;
+}
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
 .ui-timepicker-div dl { text-align: left; }
