@@ -26,6 +26,9 @@
  *  
  */
 
+/**
+ * show and hide loading overlay
+ */
 function loading() {
     $("#loading").show();
 }
@@ -34,6 +37,9 @@ function loadingDone() {
     $("#loading").hide();
 }
 
+/**
+ * Convenience wrappers for GET and POST requests, showing the loading overlay.
+ */
 function yaySON(url,callback) {
     loading();
     $.getJSON(url,function(data) {
@@ -52,6 +58,9 @@ function yayPOST(url,post,callback) {
     });
 }
 
+/**
+ * Helper function to pad number with 0's
+ */
 function padNum(i,len) {
     var s = i.toString();
     
@@ -62,7 +71,10 @@ function padNum(i,len) {
     return s;
 }
 
-function editAudio(id) {    
+/**
+ * Populate and show audio edit dialog
+ */
+function editAudio(id) {
     $("#edit .audioid").text(id);
     $("#edit .waveform").attr('src','images/loading_waveform.png');
     $("#edit .waveform").attr('src','upload/waveform.php?id='+id);
@@ -95,6 +107,11 @@ function editAudio(id) {
     
 }
 
+/**
+ * Populate and show show edit dialog.
+ * 
+ * @param String id the id of the show to edit
+ */
 function editShow(id) {
     $("#editshow").show();
     if(id!='*')
@@ -111,6 +128,12 @@ function editShow(id) {
     }
 }
 
+/**
+ * Fills a form with data from the provided data object.
+ * 
+ * @var String selector jquery selector for the form element
+ * @var Object data object, field names correspond to the name attribute of the input to copy the field value to
+ */
 function fillForm(selector,data) {
     console.log('fillForm('+selector+','+data+')');
     
@@ -153,6 +176,9 @@ function fillForm(selector,data) {
     });
 }
 
+/**
+ * Reload the show list.
+ */
 function updateShowList() {
     $("#showlist").dataTable().fnClearTable();
     $('#showlist').dataTable( {
@@ -161,6 +187,9 @@ function updateShowList() {
     } );    
 }
 
+/**
+ * Reload the episode list
+ */
 function updateEpisodeList() {
     $("#episodelist").dataTable().fnClearTable();
     $('#episodelist').dataTable( {
@@ -169,6 +198,11 @@ function updateEpisodeList() {
     } );    
 }
 
+/**
+ * Populate and show episode edit dialog
+ * 
+ * @param String id the id of the episode to be editted
+ */
 function editEpisode(id) {
     $("#editepisode").show();
     if(id!='*')
@@ -185,6 +219,12 @@ function editEpisode(id) {
     }
 }
 
+/**
+ * Recurring transcoding progress updater. Schedules itself to repeat until
+ * transcoding is complete.
+ * 
+ * @param String fmt one of 'ogg', 'mp3', 'flac'
+ */
 function showTranscodeProgress(fmt) {
     $.getJSON('upload/transcode.php?p=1',function(data) {
         if(data.progress && data.progress.length)
@@ -203,6 +243,14 @@ function showTranscodeProgress(fmt) {
     
 }
 
+/**
+ * Request transcode process on the server.
+ * 
+ * Kicks off the showTranscodeProgress(..) updater.
+ * 
+ * @param String id the id of the audio file to transcode
+ * @param String fmt one of 'ogg', 'mp3', 'flac'
+ */
 function transcode(id,fmt) {
     console.log('transcode '+id+' '+fmt)
     loading();
@@ -218,6 +266,9 @@ function transcode(id,fmt) {
     });
 }
 
+/**
+ * Reload the option's in the schedule chooser select element (in the 'schedules' applet).
+ */
 function updateScheduleChooser() {
     $.getJSON('upload/load.php?c=schedule',function(data) {
         console.log(data);
@@ -242,6 +293,12 @@ function updateScheduleChooser() {
     });
 }
 
+/**
+ * Update schedule chooser and fullcalendar view, reloading events.
+ * 
+ * Looks up the current schedule from persistent storage key 'schedule', which
+ * contains the _id of a schedule.
+ */
 function updateSchedules() {                
     updateScheduleChooser();
 
@@ -292,9 +349,12 @@ function updateSchedules() {
     }
 }
 
+/**
+ * $(document).ready
+ */
 $(document).ready(function() {
 
-
+    // main menu / tabs click event
     $("#mainmenu span").click(function() {
         console.log($(this).data('applet'));
         if($(this).hasClass('inactive')) {
@@ -311,6 +371,11 @@ $(document).ready(function() {
         
     });
                 
+    /**
+     * Schedule applet
+     */
+    
+    // change event handler for the schedule chooser
     $("#schedules .schedulechooser").change(function() {
         if($("#schedules .schedulechooser").val()=='*') {
             $("#newschedulename").fadeIn('slow');
@@ -323,6 +388,7 @@ $(document).ready(function() {
         }
     });
     
+    // create schedule control click handler
     $("#createschedule").click(function() {
         loading();
         $.post('upload/save.php','collection=schedule&name='+$("#newschedulename").val()+'&_id=*',function(data) {
@@ -331,11 +397,17 @@ $(document).ready(function() {
         });    
     });
     
+    //
+    // scheduleshow dialog
+    //
+    
     $("#scheduleshow .cancel").click(function() {
         $("#scheduleshow").fadeOut();
     });
     
+    
     $("#scheduleshow .save").click(function() {
+        // create event object
         var startt = new Date($("#showscheduleform input[name='start']").val()).getTime()/1000;
         var endt = new Date($("#showscheduleform input[name='end']").val()).getTime()/1000;
         var e = [ {
@@ -346,6 +418,7 @@ $(document).ready(function() {
                 allDay: false
             } ];
         console.log(e);
+        // save object to server, reload calendar on success
         yayPOST('upload/save.php',
         'collection=showevent'+
             '&sc='+$.Storage.get('schedule')+
@@ -354,18 +427,23 @@ $(document).ready(function() {
             '&start='+e[0].start+
             '&end='+e[0].end+
             '&allDay='+e[0].allDay,
-        function(data) {
-            console.log(data);
-            $("#scheduleshow").fadeOut('slow');
-            e[0]._id=data._id;
-            e[0].id=data._id;
+            function(data) {
+                console.log(data);
+                $("#scheduleshow").fadeOut('slow');
+                e[0]._id=data._id;
+                e[0].id=data._id;
         
-        $("#calendar").fullCalendar('addEventSource',e);
-        $("#calendar").fullCalendar('render');
-                    return true;
+                $("#calendar").fullCalendar('addEventSource',e);
+                $("#calendar").fullCalendar('render');
+                
+                return true;
         }
     );
     });
+    
+    //
+    // lists
+    //
     
     $('#audiolist').dataTable( {
         "bProcessing": true,
@@ -402,8 +480,26 @@ $(document).ready(function() {
         editEpisode($(tds[0]).text());
     });
 
+    //
+    // date/time picker elements
+    //
+    $("#editepisode form input[name='start']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
+    $("#editepisode form input[name='end']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
+    $("#showscheduleform input[name='start']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
+    $("#showscheduleform input[name='end']").datetimepicker({
+        dateFormat:'yy/mm/dd'
+    });
 
-
+    //
+    // audio edit dialog
+    //
+    
     $('#edit .cancel').click(function() {
         $("#edit").fadeOut('slow'); 
     });
@@ -416,6 +512,31 @@ $(document).ready(function() {
             updateShowList();
         });                
     });
+    
+    // transcode audio
+    $("#edit .transcode").click(function() {
+        var id=$("#edit form input[name='_id']").val();
+        transcode(id,$(this).attr('data-fmt'));
+    });
+
+    // set preview player (<audio> tag) file format, transcode if needed
+    $("#edit .playerfmt").change(function(event) {
+        console.log(event);
+        var fmt=$("#edit .playerfmt").val();
+       
+        var meta=$("#edit").data('subject');
+       
+        if(fmt!='flac' && !(meta['has_'+fmt] && meta['has_'+fmt]==1)) {
+            transcode(meta._id,fmt);
+        } else {
+            $("#edit .player").attr('src','upload/uploads/'+meta._id+'.'+fmt);
+        }
+       
+    });
+
+    //
+    // edit show dialog
+    //
     
     $("#editshow .cancel").click(function() {
         $("#editshow").fadeOut('slow'); 
@@ -434,6 +555,10 @@ $(document).ready(function() {
         editShow('*');
     });
 
+    //
+    // edit episode dialog
+    //
+    
     $("#editepisode .cancel").click(function() {
         $("#editepisode").fadeOut('slow'); 
     });
@@ -447,41 +572,14 @@ $(document).ready(function() {
         });       
     });
     
-    $("#editepisode form input[name='start']").datetimepicker({
-        dateFormat:'yy/mm/dd'
-    });
-    $("#editepisode form input[name='end']").datetimepicker({
-        dateFormat:'yy/mm/dd'
-    });
-    $("#showscheduleform input[name='start']").datetimepicker({
-        dateFormat:'yy/mm/dd'
-    });
-    $("#showscheduleform input[name='end']").datetimepicker({
-        dateFormat:'yy/mm/dd'
-    });
-    
     $("#newepisode").click(function() {
         editEpisode('*');
     });
     
-    $("#edit .transcode").click(function() {
-        var id=$("#edit form input[name='_id']").val();
-        transcode(id,$(this).attr('data-fmt'));
-    });
     
-    $("#edit .playerfmt").change(function(event) {
-        console.log(event);
-        var fmt=$("#edit .playerfmt").val();
-       
-        var meta=$("#edit").data('subject');
-       
-        if(fmt!='flac' && !(meta['has_'+fmt] && meta['has_'+fmt]==1)) {
-            transcode(meta._id,fmt);
-        } else {
-            $("#edit .player").attr('src','upload/uploads/'+meta._id+'.'+fmt);
-        }
-       
-    });
+    //
+    // schedule applet
+    //
     
     $("#newschedulename").click(function() {
         if($("#newschedulename").val()=='New schedule name..')
@@ -491,35 +589,10 @@ $(document).ready(function() {
         if($("#newschedulename").val()=='')
             $("#newschedulename").val('New schedule name..');        
     });
-    // page is now ready, initialize the calendar...
-    /*
-                $('#calendar').fullCalendar({
-                    // put your options and callbacks here
-                    dayClick: function (date, allDay, jsEvent, view) {
-                        console.log(date);
-                        console.log(allDay);
-                        console.log(jsEvent);
-                        console.log(view);
-                        if(!allDay) {
-                            $("#yaydate").text(date.toString());
-                            $("#fileevent").show();
-                            $("#streamevent").hide();
-                            $("#event").show();
-                        }
-                    }
-                });
-                
-                $("#calendar").fullCalendar('changeView','agendaWeek');
-               
-                $("select[name='type']").change(function() {
-                    console.log('changed '+$("select[name='type']")[0].options.selectedIndex);
-                    if($("select[name='type']")[0].options.selectedIndex==1) {
-                        $("#fileevent").hide();
-                        $("#streamevent").show();
-                    } else {
-                        $("#fileevent").show();
-                        $("#streamevent").hide();                        
-                    }
-                });
-     */
-});
+
+    //
+    // select initial applet
+    //
+    $("#mainmenu span[data-applet='schedules']").click();
+    
+}); // end of $(document).ready
