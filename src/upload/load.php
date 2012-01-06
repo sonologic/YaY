@@ -30,6 +30,19 @@
 require_once('../config.inc');
 require_once('../include/db.php');
 
+/**
+ * Parameters:
+ * 
+ * c - collection (audio,episode,show,schedule,showevent,...)
+ * f - list of fields, comma seperated (only used when aa is defined)
+ * aa - if defined, wrap results in 'aa' for jquery.dataTables 
+ * id - if aa undefined, retrieve object with given id
+ * 
+ * If aa is set, or both aa and id are undefined, all objects in the given
+ * collection will be returned.
+ * 
+ * @todo limit results
+ */
 if (isset($_GET['c']) && preg_match('/^([a-z]+)$/', $_GET['c'], $collection)) {
 
     $s = new Storage('yaydev', $collection[1]);
