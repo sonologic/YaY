@@ -205,10 +205,33 @@ function updateEpisodeList() {
  */
 function editEpisode(id) {
     $("#editepisode").show();
+    loading();
+    
+    $.getJSON('upload/load.php?c=show',function(data) {
+        $("#editepisode select[name='show']").empty();
+        console.log(data);
+        for(var i=0;i<data.length;i++) {
+            $("#editepisode select[name='show']").append(
+                '<option value="'+data[i]._id+'">'+data[i].title+'</option>'
+            );
+        }
+    });
+
     if(id!='*')
         $.getJSON('upload/load.php?c=episode&id='+id,function(data) {
             data.collection='episode';
             fillForm("#editepisode form",data);
+            if(data.slotid) {
+                $.getJSON('upload/load.php?c=showevent&id='+data.slotid,function(edata) {
+                    edata.start=new Date(edata.start*1000);
+                    edata.end=new Date(edata.end*1000);
+                    episodeSetSlot(edata);
+                });
+                loadingDone();
+            } else {
+                $("#editepisode td.slot").text('pick');
+                loadingDone();
+            }
         })
     else {
         data={
@@ -216,9 +239,46 @@ function editEpisode(id) {
             collection:'episode'
         };
         fillForm("#editepisode form",data);
+        loadingDone();
     }
 }
 
+function episodeSetSlot(event) {
+    date=event.start;
+    start=date.getFullYear()+'/'+padNum(date.getMonth()+1,2)+'/'+padNum(date.getDate(),2)+' '+
+                    padNum(date.getHours(),2)+':'+padNum(date.getMinutes(),2);
+    date=event.end;
+    end=date.getFullYear()+'/'+padNum(date.getMonth()+1,2)+'/'+padNum(date.getDate(),2)+' '+
+                    padNum(date.getHours(),2)+':'+padNum(date.getMinutes(),2);
+
+    $("#editepisode input[name='slotid']").val(event._id);
+    $("#editepisode .slot").empty();
+    $("#editepisode .slot").append(start+' - '+end);
+    
+}
+
+function episodeSlotPicker(episodeid,showid) {
+    loading();
+    $("#slotpicker").fadeIn('slow');
+    $("#slotpicker .calendar").empty();
+    $.getJSON('upload/load.php?c=showevent&s=sh:'+showid,function(data) {
+        $('#slotpicker .calendar').fullCalendar({
+            eventClick: function(event,jsevent,view) {
+                episodeSetSlot(event);
+                console.log(event);
+                $("#slotpicker").fadeOut('slow');
+            }
+        });
+                        
+        //$("#slotpicker .calendar").fullCalendar('changeView','agendaWeek');
+        for(var i=0;i<data.length;i++) {
+            data[i].allDay=data[i].allDay=='true';
+        }
+        $("#slotpicker .calendar").fullCalendar('addEventSource',data);
+        loadingDone();
+        return true;
+    });
+}
 /**
  * Recurring transcoding progress updater. Schedules itself to repeat until
  * transcoding is complete.
@@ -574,6 +634,10 @@ $(document).ready(function() {
     
     $("#newepisode").click(function() {
         editEpisode('*');
+    });
+    
+    $("#editepisode .slot").click(function() {
+        episodeSlotPicker($("#editepisode input[name='_id']").val(), $("#editepisode select[name='show']").val());        
     });
     
     

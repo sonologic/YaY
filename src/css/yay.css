@@ -25,7 +25,7 @@
     display: none;
     width: 100%;
     height: 100%;
-    z-index: 1000;
+    z-index: 10000;
     position: absolute;
     top: 0;
     left: 0;
@@ -103,6 +103,16 @@
     background: #bbb;
     border: solid black 1px;
     z-index: 999;
+}
+
+#slotpicker {
+    position: absolute;
+    top: 3em;
+    left: 3em;
+    width: 90%;
+    background: #ccc;
+    border: solid #555 1px;
+    z-index: 1001;
 }
 
 .save, .cancel, .nav {

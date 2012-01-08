@@ -35,8 +35,8 @@ class Storage {
         $this->collection = $this->db->$collection;
     }
 
-    public function find() {
-        $cursor = $this->collection->find();
+    public function find($conditions) {
+        $cursor = $this->collection->find($conditions);
         $rv = array();
         foreach ($cursor as $obj) {
             $rv[] = $obj;

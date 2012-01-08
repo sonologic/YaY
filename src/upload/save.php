@@ -29,6 +29,8 @@
 require_once('../config.inc');
 require_once('../include/db.php');
 
+// @todo user-based restriction checks
+
 if(isset($_POST['collection'])&&preg_match('/^([a-z]+)$/',$_POST['collection'],$coll)) {
     $s=new Storage('yaydev',$coll[1]);
     unset($_POST['collection']);

@@ -136,6 +136,7 @@
                 <form method="POST">
                     <input type="hidden" name="collection"/>
                     <input type="hidden" name="_id"/>
+                    <input type="hidden" name="slotid"/>
                     <table>
                         <tr>
                             <td>Title</td><td><input type="text" name="title"/></td>                        
@@ -144,14 +145,14 @@
                             <td>Slug</td><td><input type="text" name="slug"/></td>                        
                         </tr>
                         <tr>
+                            <td>Show</td><td><select name="show"></select></td>
+                        </tr>
+                        <tr>
                             <td>Language</td><td><input type="text" name="language"/></td>
                         </tr>
                         <tr>
-                            <td>Start</td><td><input type="text" name="start"/></td>
+                            <td>Slot</td><td class="slot nav">pick</td>
                         </tr>
-                        <tr>
-                            <td>End</td><td><input type="text" name="end"/></td>
-                        </tr>                        
                         <tr>
                             <td>Type:</td><td>
                                 <select name="type">
@@ -176,6 +177,11 @@
                         <tr><td><span class="save">save</span></td><td><span class="cancel">cancel</span></td></tr>
                     </table>
                 </form>
+            </div>
+            <div id="slotpicker" class="applet">
+                Pick slot for <span class="showname"></span>:
+                <div class="calendar">
+                </div>
             </div>
             <div id="audio" class="applet">
                 <table cellpadding="0" cellspacing="0" border="0" class="display" id="audiolist">
