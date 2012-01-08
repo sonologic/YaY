@@ -47,6 +47,13 @@ if (isset($_GET['c']) && preg_match('/^([a-z]+)$/', $_GET['c'], $collection)) {
 
     $s = new Storage('yaydev', $collection[1]);
     
+    $cond=array();
+    if(isset($_GET['s']) && preg_match_all('/([a-zA-Z0-9_]+):([a-zA-Z0-9]+)/',$_GET['s'],$matches)) {
+        for($i=0;$i<count($matches[1]);$i++) {
+            $cond[$matches[1][$i]]=$matches[2][$i];
+        }
+    }
+    
     if(isset($_GET['f']) && preg_match('/^(([_a-zA-Z]+,?)+)$/',$_GET['f'],$match)) {
         $fields=preg_split('/,/',$match[1]);
     } else {
@@ -54,7 +61,7 @@ if (isset($_GET['c']) && preg_match('/^([a-z]+)$/', $_GET['c'], $collection)) {
     }
 
     if (isset($_GET['aa'])) {
-        $items = $s->find();
+        $items = $s->find($cond);
         $records = array();
         foreach ($items as $item) {
             $values=array();
@@ -72,7 +79,7 @@ if (isset($_GET['c']) && preg_match('/^([a-z]+)$/', $_GET['c'], $collection)) {
         $item = $s->select($id[1]);
         echo json_encode($item);
     } else {
-        $items = $s->find();
+        $items = $s->find($cond);
         echo json_encode($items);
     }
 } else {
