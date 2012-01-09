@@ -92,6 +92,7 @@ function generateWaveForm($id, $type, $stereo = false) {
             $wavs_to_process[] = "{$tmpname}_r.wav";
         } else {
             //exec("lame {$tmpname}_o.mp3 -m m -S -f -b 16 --resample 8 {$tmpname}.mp3 && lame -S --decode {$tmpname}.mp3 {$tmpname}.wav");
+            //echo(SOX_CMD." -t " . $type . " uploads/$id -b 16 -c 1 /tmp/{$tmpname}.wav");
             exec(SOX_CMD." -t " . $type . " uploads/$id -b 16 -c 1 /tmp/{$tmpname}.wav");
             $wavs_to_process[] = "/tmp/{$tmpname}.wav";
         }

@@ -100,7 +100,9 @@ function editAudio(id) {
         
         }
         
-        $("#edit .player").attr('src','upload/uploads/'+id+'.'+$("#edit .playerfmt").val());
+        $("#edit .player").empty();
+        $("#edit .player").append('<audio src="upload/uploads/'+id+'.'+$("#edit .playerfmt").val()+'" controls></audio>');
+	
         loadingDone();
 
     });
@@ -297,7 +299,8 @@ function showTranscodeProgress(fmt) {
             $("#transcodeprogress").text('');
             var id=$("#edit form input[name='_id']").val();
             editAudio(id);
-            $("#edit .player").attr('src','upload/uploads/'+id+'.'+fmt);
+            //$("#edit .player").empty();
+            //$("#edit .player").append('<audio src="upload/uploads/'+id+'.'+$("#edit .playerfmt").val()+'" controls></audio>');
         }
     });
     
@@ -589,7 +592,8 @@ $(document).ready(function() {
         if(fmt!='flac' && !(meta['has_'+fmt] && meta['has_'+fmt]==1)) {
             transcode(meta._id,fmt);
         } else {
-            $("#edit .player").attr('src','upload/uploads/'+meta._id+'.'+fmt);
+            $("#edit .player").empty();
+            $("#edit .player").append('<audio src="upload/uploads/'+meta._id+'.'+fmt+'" controls></audio>');
         }
        
     });

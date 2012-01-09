@@ -8,3 +8,10 @@ Dependencies
 php5 (+mongo +id3 +vorbis)
 mongodb
 sox
+pecl-id3
+pecl-fileinfo
+
+Config
+======
+
+max_file_upload_size in php.ini

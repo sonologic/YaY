@@ -28,6 +28,9 @@
  *  
  */
 
+if(!defined('FILEINFO_MIME_TYPE'))
+  define('FILEINFO_MIME_TYPE',FILEINFO_MIME);
+ 
 require_once('../include/db.php');
 $target_path = "uploads/";
 

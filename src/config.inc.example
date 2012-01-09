@@ -1,5 +1,5 @@
 <?php
 
-SOX_CMD="/opt/local/bin/sox"
+define('SOX_CMD',"/opt/local/bin/sox");
 
 ?>

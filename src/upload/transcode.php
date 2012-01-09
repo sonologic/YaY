@@ -30,6 +30,9 @@
 require_once('../config.inc');
 require_once('../include/db.php');
 
+if(!defined('FILEINFO_MIME_TYPE'))
+  define('FILEINFO_MIME_TYPE',FILEINFO_MIME);
+
 if (!isset($_GET['p'])) {
     if (isset($_GET['id']) && preg_match('/^([a-zA-Z0-9]+)$/', $_GET['id'], $id)) {
         $fmt = 'flac';
