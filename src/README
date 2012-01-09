@@ -1,15 +1,17 @@
 YaY - Yet another YARM
 ======================
 
-
+YaY is a (web)radio manager suite, providing the ability to create channel schedules,
+automatically capture live shows, publish all shows to the archive, provide multi-
+faceted search and make it easy for content creators to upload or stream their
+contributions. It builds upon the liquidsoap streaming backend software, which
+interfaces with any icecast/shoutcast compatible client and server.
 
 Dependencies
 ============
-php5 (+mongo +id3 +vorbis)
+php5 (+mongo +id3 +vorbis +fileinfo)
 mongodb
 sox
-pecl-id3
-pecl-fileinfo
 
 Config
 ======

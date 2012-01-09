@@ -46,7 +46,6 @@ if (!isset($_GET['p'])) {
         if ($meta) {
 
             $cmd = SOX_CMD.' -S -t ' . $meta['type'] . ' uploads/' . $id[1] . ' uploads/' . $id[1] . '.'.$fmt.' > /dev/null 2> /tmp/' . $id[1] . ' & echo $!';
-            //echo $cmd;
             exec($cmd, $op);
 
             session_start();
